@@ -10,6 +10,9 @@ namespace ClientGUI
     {
         public string id { get; set; }
         public string PyCodeBlock{ get; set; }
+        public string result { get; set; }
+        public bool Completed { get; set; }
+
 
     }
 }

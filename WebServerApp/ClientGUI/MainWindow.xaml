@@ -13,8 +13,8 @@
         <Button Name="SubmitButton" Content="Submit" HorizontalAlignment="Left" Height="25" Margin="200,379,0,0" VerticalAlignment="Top" Width="115" Click="SubmitButton_Click"/>
         <Button Name="ShowJobsButton" Content="Show Jobs" HorizontalAlignment="Left" Height="25" Margin="400,52,0,0" VerticalAlignment="Top" Width="115" Click="ShowJobsButton_Click"/>
         <Button Name="NetwrokStatus" Content="Network Status" HorizontalAlignment="Left" Height="25" Margin="560,52,0,0" VerticalAlignment="Top" Width="115" Click="NetworkStatusButton_Click"/>
-        <TextBox Name="NewtorkAndJobStatus" TextWrapping="Wrap" Text="" Margin="400,120,35,82"/>
         <Label Content="Network and Job Status" HorizontalAlignment="Left" Height="38" Margin="400,82,0,0" VerticalAlignment="Top" Width="210"/>
+        <TextBlock Name ="NetworkStatusDisplay" TextWrapping="Wrap" Text="" Margin="400,107,55,82"/>
 
     </Grid>
 </Window>

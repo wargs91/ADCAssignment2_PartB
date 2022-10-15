@@ -22,9 +22,30 @@ namespace ClientGUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
+        int JobsComplete;
+        bool ActiveJob;
+        bool JobWaiting;
         public MainWindow()
         {
             InitializeComponent();
+            //Networking Thread
+            //GET Client List from WebServerApp
+            //while ActiveJob== False
+                //Loop thorugh the list of IP addresses/Ports
+                //connect and query for job
+                    //if job exists
+                        //run code using ironPython
+                        //POST solution to the client
+                       
+                        //JobComnplete++
+                        //Post so webserver (Why Do I need to do this)
+
+            //Server Thread
+                //Allow client to ask for job
+                //POST next job on list
+                //on return save result and chand Complete to true
+
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -33,6 +54,8 @@ namespace ClientGUI
             openFileDialog.DefaultExt = ".txt";
             openFileDialog.Filter = "text files |*.txt";
             bool? response = openFileDialog.ShowDialog();
+
+
 
             if(response == true)
             {
@@ -59,19 +82,23 @@ namespace ClientGUI
             PythonCodeObj NewCodeTask = new PythonCodeObj();
             NewCodeTask.id = DateTime.Now.ToString();
             NewCodeTask.PyCodeBlock = PythonInput.Text;
-            MessageBox.Show(NewCodeTask.PyCodeBlock);
-
+            NewCodeTask.Completed = false;
+            NewCodeTaskList.Add(NewCodeTask);
+            
         }
 
         private void ShowJobsButton_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void NetworkStatusButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
+        
+    
+    
     }
 }
     
