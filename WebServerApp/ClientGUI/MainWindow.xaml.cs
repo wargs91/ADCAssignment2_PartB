@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using IronPython.Hosting;
 
 namespace ClientGUI
 {
@@ -29,6 +30,8 @@ namespace ClientGUI
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.DefaultExt = ".txt";
+            openFileDialog.Filter = "text files |*.txt";
             bool? response = openFileDialog.ShowDialog();
 
             if(response == true)
@@ -36,12 +39,28 @@ namespace ClientGUI
                 string filepath = openFileDialog.FileName;
 
                 MessageBox.Show(filepath);
+
+                if(System.IO.File.Exists(filepath)== true)
+                {
+                    System.IO.StreamReader objReader;
+                    objReader = new System.IO.StreamReader(filepath);
+                    PythonInput.Text = objReader.ReadToEnd();
+                    objReader.Close();
+                }
+                else
+                {
+                    MessageBox.Show("File Does Not Exist");
+                }
             }
         }
 
-        private void SubmitButton_Click(object sender, RoutedEventArgs e)
-        { 
-        
+        public void SubmitButton_Click(object sender, RoutedEventArgs e)
+        {
+            PythonCodeObj NewCodeTask = new PythonCodeObj();
+            NewCodeTask.id = DateTime.Now.ToString();
+            NewCodeTask.PyCodeBlock = PythonInput.Text;
+            MessageBox.Show(NewCodeTask.PyCodeBlock);
+
         }
 
         private void ShowJobsButton_Click(object sender, RoutedEventArgs e)
