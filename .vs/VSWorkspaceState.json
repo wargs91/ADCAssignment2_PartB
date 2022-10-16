@@ -1,4 +1,10 @@
 {
-  "ExpandedNodes": [],
+  "ExpandedNodes": [
+    "",
+    "\\WebServerApp",
+    "\\WebServerApp\\WebClient",
+    "\\WebServerApp\\WebClient\\Controllers"
+  ],
+  "SelectedNode": "\\WebServerApp\\WebClient\\Controllers\\HomeController.cs",
   "PreviewInSolutionExplorer": false
 }

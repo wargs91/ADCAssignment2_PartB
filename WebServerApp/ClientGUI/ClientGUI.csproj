@@ -151,5 +151,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebServerApp\WebServerApp.csproj">
+      <Project>{f173a3df-05b9-4b7a-a43a-ead2954416a4}</Project>
+      <Name>WebServerApp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

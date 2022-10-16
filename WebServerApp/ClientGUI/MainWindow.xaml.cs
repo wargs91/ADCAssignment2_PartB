@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Newtonsoft.Json;
-using IronPython.Hosting;
+using RestSharp;
+using WebServerApp.Models;
+using IronPython;
 
 namespace ClientGUI
 {
@@ -23,28 +14,16 @@ namespace ClientGUI
     public partial class MainWindow : Window
     {
         List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
-        int JobsComplete;
+        int JobsComplete = 0;
         bool ActiveJob;
         bool JobWaiting;
         public MainWindow()
         {
             InitializeComponent();
-            //Networking Thread
-            //GET Client List from WebServerApp
-            //while ActiveJob== False
-                //Loop thorugh the list of IP addresses/Ports
-                //connect and query for job
-                    //if job exists
-                        //run code using ironPython
-                        //POST solution to the client
-                       
-                        //JobComnplete++
-                        //Post so webserver (Why Do I need to do this)
+            //delegate netwroking task
+            //delegate server thread
 
-            //Server Thread
-                //Allow client to ask for job
-                //POST next job on list
-                //on return save result and chand Complete to true
+
 
         }
 
@@ -57,13 +36,13 @@ namespace ClientGUI
 
 
 
-            if(response == true)
+            if (response == true)
             {
                 string filepath = openFileDialog.FileName;
 
                 MessageBox.Show(filepath);
 
-                if(System.IO.File.Exists(filepath)== true)
+                if (System.IO.File.Exists(filepath) == true)
                 {
                     System.IO.StreamReader objReader;
                     objReader = new System.IO.StreamReader(filepath);
@@ -84,21 +63,49 @@ namespace ClientGUI
             NewCodeTask.PyCodeBlock = PythonInput.Text;
             NewCodeTask.Completed = false;
             NewCodeTaskList.Add(NewCodeTask);
-            
+
         }
 
         private void ShowJobsButton_Click(object sender, RoutedEventArgs e)
         {
-            
+            //create string showing number of jobs complete and if a job is currently being processed
         }
 
         private void NetworkStatusButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
-        
-    
-    
+
+        public void Networking()
+        {
+            RestClient restClient = new RestClient("http://localhost:49901/");
+            RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Get);
+            RestResponse restResponse = restClient.Get(restRequest);
+
+            List<UserRegistry> userRegistries = JsonConvert.DeserializeObject<List<UserRegistry>>(restResponse.Content);
+            while (ActiveJob == false)
+            {
+                //Loop thorugh the list of IP addresses/Ports
+                //connect and query for job
+                if (JobWaiting == true)
+                {
+                    //use Iron Python to execute code
+                    // return result to client
+                    JobsComplete++;
+                    //Post to webserver?
+                }
+
+            }
+
+        }
+        public void Server()
+        { 
+          //Server Thread
+          //Allow client to ask for job
+          //POST next job on list
+          //on return save result and chand Complete to true
+
+        }
     }
 }
     
