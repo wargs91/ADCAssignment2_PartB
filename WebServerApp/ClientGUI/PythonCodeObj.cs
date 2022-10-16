@@ -12,6 +12,7 @@ namespace ClientGUI
         public string PyCodeBlock{ get; set; }
         public string result { get; set; }
         public bool Completed { get; set; }
+        public string PyFunName { get; set; }
 
 
     }

@@ -4,7 +4,12 @@ using System.Windows;
 using Newtonsoft.Json;
 using RestSharp;
 using WebServerApp.Models;
+using IronPython.Compiler;
+using System.ServiceModel;
+using IronPython.Hosting;
+using IronPython.Modules;
 using IronPython;
+using Microsoft.Scripting.Hosting;
 
 namespace ClientGUI
 {
@@ -15,16 +20,16 @@ namespace ClientGUI
     {
         List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
         int JobsComplete = 0;
-        bool ActiveJob;
+        public bool ActiveJob;
         bool JobWaiting;
         public MainWindow()
         {
             InitializeComponent();
-            //delegate netwroking task
-            //delegate server thread
-
-
-
+            while (ActiveJob == false)
+            {
+                Networking();//delegate or asynch
+            }
+            Server();
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -68,7 +73,18 @@ namespace ClientGUI
 
         private void ShowJobsButton_Click(object sender, RoutedEventArgs e)
         {
-            //create string showing number of jobs complete and if a job is currently being processed
+            string status;
+            if( ActiveJob == true)
+            {
+                status = "is currently working on a job";
+            }
+            else 
+            {
+                status = "is not currently working on a job";
+            }
+            string output = "The system has completed " + JobsComplete + " jobs and " + status;
+            NetworkStatusDisplay.Text = output;
+
         }
 
         private void NetworkStatusButton_Click(object sender, RoutedEventArgs e)
@@ -78,34 +94,18 @@ namespace ClientGUI
 
         public void Networking()
         {
-            RestClient restClient = new RestClient("http://localhost:49901/");
-            RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Get);
-            RestResponse restResponse = restClient.Get(restRequest);
 
-            List<UserRegistry> userRegistries = JsonConvert.DeserializeObject<List<UserRegistry>>(restResponse.Content);
-            while (ActiveJob == false)
-            {
-                //Loop thorugh the list of IP addresses/Ports
-                //connect and query for job
-                if (JobWaiting == true)
-                {
-                    //use Iron Python to execute code
-                    // return result to client
-                    JobsComplete++;
-                    //Post to webserver?
-                }
-
-            }
-
+           
         }
+
+
         public void Server()
-        { 
-          //Server Thread
-          //Allow client to ask for job
-          //POST next job on list
-          //on return save result and chand Complete to true
+        {
 
         }
+
     }
 }
+
+
     
