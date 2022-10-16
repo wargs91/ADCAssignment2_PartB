@@ -16,7 +16,9 @@ div#navigation ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: red;
+    background: #000000;
+    font-family: monospace;
+    color: #00ff00;
 }
 
 div#navigation li {
@@ -25,7 +27,9 @@ div#navigation li {
 
     div#navigation li a {
         display: block;
-        color: white;
+        background: #000000;
+        font-family: monospace;
+        color: #00ff00;
         text-align: center;
         padding: 16px;
         text-decoration: none;
@@ -36,7 +40,9 @@ div#navigation li {
         }
 
 div#main {
-    background-color: palegreen;
+    background: #000000;
+    font-family: monospace;
+    color: #00ff00;
     height: 40000px;
     text-align: center;
 }
@@ -73,7 +79,9 @@ button {
 }
 
 div#footer {
-    background-color: lightcoral;
+    background: #000000;
+    font-family: monospace;
+    color: #00ff00;
     text-align: center;
     height: 100px;
 }
@@ -84,7 +92,15 @@ table, th, td {
 
 }
 tr:nth-child(even) {
-    background-color: #D6EEEE;
+    background: #000000;
+    font-family: monospace;
+}
+i {
+    color: white;
+    text-transform: none;
 }
 
+.theme_color {
+    color: #00ff00;
+}
 

@@ -2,9 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\WebServerApp",
+    "\\WebServerApp\\ClientGUI",
     "\\WebServerApp\\WebClient",
     "\\WebServerApp\\WebClient\\Controllers"
   ],
-  "SelectedNode": "\\WebServerApp\\WebClient\\Controllers\\HomeController.cs",
+  "SelectedNode": "\\WebServerApp\\ClientGUI\\MainWindow.xaml.cs",
   "PreviewInSolutionExplorer": false
 }
