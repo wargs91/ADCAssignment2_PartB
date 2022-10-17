@@ -10,6 +10,8 @@ using IronPython.Hosting;
 using IronPython.Modules;
 using IronPython;
 using Microsoft.Scripting.Hosting;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace ClientGUI
 {
@@ -20,16 +22,18 @@ namespace ClientGUI
     {
         List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
         int JobsComplete = 0;
-        public bool ActiveJob;
+        public bool ActiveJob = false;
         bool JobWaiting;
+        private ServerInterface foob;
         public MainWindow()
         {
             InitializeComponent();
-            while (ActiveJob == false)
-            {
-                Networking();//delegate or asynch
-            }
-            Server();
+           
+                Task task = new Task(Networking);
+                task.Start();
+            
+            Task task2 = new Task(Server);
+            task2.Start();
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -68,6 +72,7 @@ namespace ClientGUI
             NewCodeTask.PyCodeBlock = PythonInput.Text;
             NewCodeTask.Completed = false;
             NewCodeTaskList.Add(NewCodeTask);
+            MessageBox.Show("Python Code submitted as job");
 
         }
 
@@ -94,13 +99,38 @@ namespace ClientGUI
 
         public void Networking()
         {
+            RestClient restClient = new RestClient("http://localhost:49901/");
+            RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Get);
+            RestResponse restResponse = restClient.Get(restRequest);
+            List<UserRegistry> userRegistries = JsonConvert.DeserializeObject<List<UserRegistry>>(restResponse.Content);
+            Random rnd = new Random();
+            int length = userRegistries.Count;
+            Random r = new Random(length);
 
-           
+            foreach (int i in Enumerable.Range(0,1).OrderBy(x => r.Next()))
+            {
+                ChannelFactory<ServerInterface> foobFactory;
+                NetTcpBinding tcp = new NetTcpBinding();
+                //Set the URL and create the connection!
+                string IPAddress = userRegistries[i].IPAddress;
+                string Port = userRegistries[i].Port;
+                string url = "net.tcp://" + IPAddress + ":" + Port;
+                foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
+                foob = foobFactory.CreateChannel();
+                PythonCodeObj nextTask = foob.GetNextTask();
+                foob.CompleteTask(nextTask);
+            }
         }
-
 
         public void Server()
         {
+            ServiceHost host;
+            NetTcpBinding tcp = new NetTcpBinding();
+            host = new ServiceHost(typeof(PythonImplementation));
+            host.AddServiceEndpoint(typeof(ServerInterface), tcp, "net.tcp://0.0.0.0:8100/PythonService");
+            host.Open();
+
+            host.Close();
 
         }
 

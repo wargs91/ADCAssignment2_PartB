@@ -113,7 +113,6 @@
     </ApplicationDefinition>
     <Compile Include="PythonCodeObj.cs" />
     <Compile Include="PythonImplementation.cs" />
-    <Compile Include="server.cs" />
     <Compile Include="ServerInterface.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
