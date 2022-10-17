@@ -14,7 +14,7 @@ namespace ClientGUI
     {
         PythonCodeObj ServerInterface.GetNextTask()
         {
-            PythonCodeObj pythonCodeObj = new PythonCodeObj();
+            PythonCodeObj pythonCodeObj = new PythonCodeObj();// need to work this one out
             return pythonCodeObj;
         }
 
@@ -27,6 +27,11 @@ namespace ClientGUI
             var result = pythonFunction();//need too figure out how to modify this for use
             newTask.Completed = true;
             return newTask;
+        }
+
+        PythonCodeObj ServerInterface.PostNextJob(ClientGUI.PythonCodeObj newJob)
+        {
+            return new PythonCodeObj();//Post from list onto the server
         }
     }
 }

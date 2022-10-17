@@ -107,18 +107,23 @@ namespace ClientGUI
             int length = userRegistries.Count;
             Random r = new Random(length);
 
-            foreach (int i in Enumerable.Range(0,1).OrderBy(x => r.Next()))
+            while (ActiveJob == false)
             {
-                ChannelFactory<ServerInterface> foobFactory;
-                NetTcpBinding tcp = new NetTcpBinding();
-                //Set the URL and create the connection!
-                string IPAddress = userRegistries[i].IPAddress;
-                string Port = userRegistries[i].Port;
-                string url = "net.tcp://" + IPAddress + ":" + Port;
-                foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
-                foob = foobFactory.CreateChannel();
-                PythonCodeObj nextTask = foob.GetNextTask();
-                foob.CompleteTask(nextTask);
+                foreach (int i in Enumerable.Range(0,1).OrderBy(x => r.Next()))
+                {
+                
+                    ChannelFactory<ServerInterface> foobFactory;
+                    NetTcpBinding tcp = new NetTcpBinding();
+                    //Set the URL and create the connection!
+                    string IPAddress = userRegistries[i].IPAddress;
+                    string Port = userRegistries[i].Port;
+                    string url = "net.tcp://" + IPAddress + ":" + Port;
+                    foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
+                    foob = foobFactory.CreateChannel();
+                    PythonCodeObj nextTask = foob.GetNextTask();
+                    foob.CompleteTask(nextTask);
+
+                }
             }
         }
 
