@@ -6,6 +6,6 @@
     "\\WebServerApp\\WebClient",
     "\\WebServerApp\\WebClient\\Controllers"
   ],
-  "SelectedNode": "\\WebServerApp\\ClientGUI\\MainWindow.xaml.cs",
+  "SelectedNode": "\\WebServerApp\\ClientGUI\\MainWindow.xaml",
   "PreviewInSolutionExplorer": false
 }

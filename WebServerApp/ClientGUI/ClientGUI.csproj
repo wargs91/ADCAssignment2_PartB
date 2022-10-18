@@ -114,6 +114,7 @@
     <Compile Include="PythonCodeObj.cs" />
     <Compile Include="PythonImplementation.cs" />
     <Compile Include="ServerInterface.cs" />
+    <Compile Include="UserRegistry.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

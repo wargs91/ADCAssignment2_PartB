@@ -12,6 +12,7 @@ using IronPython;
 using Microsoft.Scripting.Hosting;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace ClientGUI
 {
@@ -23,17 +24,18 @@ namespace ClientGUI
         List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
         int JobsComplete = 0;
         public bool ActiveJob = false;
-        bool JobWaiting;
+        string serverClientPort;
+        string serverClientIP;
         private ServerInterface foob;
+        
         public MainWindow()
         {
             InitializeComponent();
            
-                Task task = new Task(Networking);
-                task.Start();
+            Task task = new Task(Networking);
+            task.Start();
             
-            Task task2 = new Task(Server);
-            task2.Start();
+
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -72,6 +74,15 @@ namespace ClientGUI
             NewCodeTask.PyCodeBlock = PythonInput.Text;
             NewCodeTask.Completed = false;
             NewCodeTaskList.Add(NewCodeTask);
+            ChannelFactory<ServerInterface> foobFactory;
+            NetTcpBinding tcp = new NetTcpBinding();
+            //Set the URL and create the connection!
+            
+            string url = "net.tcp://" + serverClientIP + ":" + serverClientPort;
+            foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
+            foob = foobFactory.CreateChannel();
+            foob.PostNextJob(NewCodeTask);
+
             MessageBox.Show("Python Code submitted as job");
 
         }
@@ -95,6 +106,29 @@ namespace ClientGUI
         private void NetworkStatusButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void SubmitClientButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+            UserRegistry newClient = new UserRegistry();
+            newClient.Port = ClientPort.Text;
+            newClient.IPAddress = ClientIP.Text;
+            serverClientIP = ClientIP.Text;
+            serverClientPort = ClientPort.Text;
+
+
+            RestClient restClient = new RestClient("http://localhost:49901/");
+            RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Post);
+            restRequest.AddJsonBody(JsonConvert.SerializeObject(newClient));
+            RestResponse restResponse = restClient.Execute(restRequest);
+            UserRegistry returnUser = JsonConvert.DeserializeObject<UserRegistry>(restResponse.Content);
+            if (returnUser != null)
+            {
+                MessageBox.Show("Client Registered");
+            }
+                Task task2 = new Task(Server);
+            task2.Start();
         }
 
         public void Networking()
@@ -121,7 +155,13 @@ namespace ClientGUI
                     foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
                     foob = foobFactory.CreateChannel();
                     PythonCodeObj nextTask = foob.GetNextTask();
-                    foob.CompleteTask(nextTask);
+                    if (nextTask != null)
+                    {
+                        ActiveJob = true;
+                        foob.CompleteTask(nextTask);
+                        ActiveJob = false;
+                    }
+
 
                 }
             }
@@ -129,12 +169,15 @@ namespace ClientGUI
 
         public void Server()
         {
+
             ServiceHost host;
             NetTcpBinding tcp = new NetTcpBinding();
             host = new ServiceHost(typeof(PythonImplementation));
-            host.AddServiceEndpoint(typeof(ServerInterface), tcp, "net.tcp://0.0.0.0:8100/PythonService");
+            string url = "net.tcp://" + serverClientIP + ":" + serverClientPort;
+            host.AddServiceEndpoint(typeof(ServerInterface), tcp, url);
             host.Open();
-
+            //need to post next task here
+            Thread.Sleep(100000);//what condition do I end this on to close the host
             host.Close();
 
         }

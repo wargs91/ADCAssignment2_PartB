@@ -13,6 +13,7 @@ namespace ClientGUI
         public string result { get; set; }
         public bool Completed { get; set; }
         public string PyFunName { get; set; }
+        public byte[] codeHash { get; set; }  
 
 
     }
