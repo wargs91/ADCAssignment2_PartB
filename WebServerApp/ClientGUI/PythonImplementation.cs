@@ -51,7 +51,7 @@ namespace ClientGUI
             }
         }
 
-        PythonCodeObj ServerInterface.PostNextJob(PythonCodeObj newJob)
+        PythonCodeObj ServerInterface.PostNewJob(PythonCodeObj newJob)
         {
             newJob.PyCodeBlock = Encode(newJob.PyCodeBlock);
             string data = newJob.PyCodeBlock;

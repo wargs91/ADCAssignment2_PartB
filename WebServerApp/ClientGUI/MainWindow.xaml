@@ -11,8 +11,7 @@
         <Label Content="Input Python Code" HorizontalAlignment="Left" Height="38" Margin="10,110,0,0" VerticalAlignment="Top" Width="210"/>
         <Button x:Name="BrowseButton" Content="Browse" HorizontalAlignment="Left" Height="25" Margin="35,379,0,0" VerticalAlignment="Top" Width="115" Click="BrowseButton_Click"/>
         <Button x:Name="SubmitButton" Content="Submit" HorizontalAlignment="Left" Height="25" Margin="200,379,0,0" VerticalAlignment="Top" Width="115" Click="SubmitButton_Click"/>
-        <Button x:Name="ShowJobsButton" Content="Show Jobs" HorizontalAlignment="Left" Height="25" Margin="400,52,0,0" VerticalAlignment="Top" Width="115" Click="ShowJobsButton_Click"/>
-        <Button x:Name="NetwrokStatus" Content="Network Status" HorizontalAlignment="Left" Height="25" Margin="560,52,0,0" VerticalAlignment="Top" Width="115" Click="NetworkStatusButton_Click"/>
+        <Button x:Name="ShowJobsButton" Content="Show Jobs and Network Status" HorizontalAlignment="Left" Height="25" Margin="400,52,0,0" VerticalAlignment="Top" Width="210" Click="ShowJobsButton_Click"/>
         <Label Content="Network and Job Status" HorizontalAlignment="Left" Height="38" Margin="400,82,0,0" VerticalAlignment="Top" Width="210"/>
         <TextBlock x:Name ="NetworkStatusDisplay" TextWrapping="Wrap" Text="" Margin="400,107,55,82"/>
         <TextBox x:Name ="ClientIP" HorizontalAlignment="Left" Height="29" Margin="65,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
@@ -20,6 +19,8 @@
         <Label Content="IP" HorizontalAlignment="Left" Height="38" Margin="10,6,0,0" VerticalAlignment="Top" Width="55"/>
         <Label Content="Port" HorizontalAlignment="Left" Height="38" Margin="10,61,0,0" VerticalAlignment="Top" Width="50"/>
         <Button x:Name="SubmitClient" Content="Submit Client" HorizontalAlignment="Left" Height="25" Margin="258,52,0,0" VerticalAlignment="Top" Width="114" Click="SubmitClientButton_Click"/>
+        <TextBox x:Name ="ID" HorizontalAlignment="Left" Height="29" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="127"/>
+        <Label Content="ID" HorizontalAlignment="Left" Height="29" Margin="225,10,0,0" VerticalAlignment="Top" Width="28"/>
 
     </Grid>
 </Window>

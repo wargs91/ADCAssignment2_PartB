@@ -16,7 +16,7 @@ namespace ClientGUI
         [OperationContract]
         PythonCodeObj CompleteTask(PythonCodeObj newTask);
         [OperationContract]
-        PythonCodeObj PostNextJob(PythonCodeObj newJob);
+        PythonCodeObj PostNewJob(PythonCodeObj newJob);
 
     }
 }

@@ -22,6 +22,7 @@ namespace ClientGUI
     public partial class MainWindow : Window
     {
         List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
+        
         int JobsComplete = 0;
         public bool ActiveJob = false;
         string serverClientPort;
@@ -81,7 +82,7 @@ namespace ClientGUI
             string url = "net.tcp://" + serverClientIP + ":" + serverClientPort;
             foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
             foob = foobFactory.CreateChannel();
-            foob.PostNextJob(NewCodeTask);
+            foob.PostNewJob(NewCodeTask);
 
             MessageBox.Show("Python Code submitted as job");
 
@@ -89,6 +90,7 @@ namespace ClientGUI
 
         private void ShowJobsButton_Click(object sender, RoutedEventArgs e)
         {
+            NetworkStatus networkStatus = new NetworkStatus();
             string status;
             if( ActiveJob == true)
             {
@@ -98,25 +100,27 @@ namespace ClientGUI
             {
                 status = "is not currently working on a job";
             }
+            networkStatus.status = status;
+            networkStatus.jobComplete = JobsComplete;
+            networkStatus.clientPort = serverClientPort;
+            networkStatus.clientIP = serverClientIP;
+            
+
             string output = "The system has completed " + JobsComplete + " jobs and " + status;
             NetworkStatusDisplay.Text = output;
 
         }
-
-        private void NetworkStatusButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
+           
 
         private void SubmitClientButton_Click(object sender, RoutedEventArgs e)
         {
             
             UserRegistry newClient = new UserRegistry();
+            newClient.Id = Int32.Parse(ID.Text);
             newClient.Port = ClientPort.Text;
             newClient.IPAddress = ClientIP.Text;
             serverClientIP = ClientIP.Text;
             serverClientPort = ClientPort.Text;
-
 
             RestClient restClient = new RestClient("http://localhost:49901/");
             RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Post);
@@ -127,7 +131,7 @@ namespace ClientGUI
             {
                 MessageBox.Show("Client Registered");
             }
-                Task task2 = new Task(Server);
+            Task task2 = new Task(Server);
             task2.Start();
         }
 

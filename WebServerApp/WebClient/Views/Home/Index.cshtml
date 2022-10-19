@@ -4,73 +4,90 @@
 @{
     @using WebClient.Models;
     @model IEnumerable<UserRegistry>;
-    <head>
-              
-        <script type="text/javascript">
-                
-            function AutoRefresh(t){
-                setTimeout("location.reload(true);", t);
-            }
 
-        </script>
+    <head>
+                                      
+                    <script type="text/javascript">
+                                        
+                        function AutoRefresh(t){
+                            setTimeout("location.reload(true);", t);
+                        }
+
+                    </script>
     </head>
     <body onload="JavaScript: AutoRefresh(60000);">
-            <h1>Welcome to the Ubiquity Network</h1>
-            <div id="Users">
-            <p>Current registered user IP and Port</p>        
-                
-            <table align="center">
-             <tr>
-                <th>IP Address</th>
-                <th>Port</th>
-            </tr>
-            @foreach(var user in Model)
-            {
-            <tr>
-                <td>@user.IPAddress</td>
-                <td>@user.Port</td>
-            </tr>
-            }
-            </table>
+    <h1>Welcome to the Ubiquity Network</h1>
+    <div id="Users">
+    <p>Current registered user IP and Port</p>        
+                                        
+    <table align="center">
+        <tr>
+        <th>IP Address</th>
+        <th>Port</th>
+    </tr>
+    @foreach(var user in Model)
+    {
+    <tr>
+        <td>@user.IPAddress</td>
+        <td>@user.Port</td>
+    </tr>
+    }
+        </table>
     </div>
-
+    @{
+    var network = ViewBag.Message;
+    }
     <div>
-   <form align="center" id="SubmitUser">
-        <fieldset>
-	        <input type="text" name="Id" id="Id" placeholder="Enter your Id"/>    
-            <input type="text" name="IPAddress" id="IPAddress" placeholder="Enter your IP Address"/>
-  	        <input type="text" name="Port" id="Port" placeholder="Enter your Port"/>
-  	        <button id="submitUser" onclick="SubmitUser()">Submit</button>
-        </fieldset>
-    </form>
-    <script>
-        function SubmitUser()
-         { 
-                $.ajax({
-                    type: 'POST',
-                    url: '/home/SubmitUser/',
-                    contentType: 'application/json',
-                    data: JSON.stringify(
-                    {
-                        "Id" :$('#Id').val(),
-                        "IPAddress" :$('#IPAddress').val(),
-                        "Port": $('#Port').val(),
-
-                    }),
-                    success: function(data, textStatus, jQxhr)
-                    {
-                        alert("User Added");
-                    },
-                    error: function(xhr, textStatus, error)
-                    {
-                        alert("Error");
-                        console.log(xhr.statusText);
-                        console.log(textStatus);
-                        console.log(error);
-                    }
-                });
-         }
-    </script>
+        @network.jobComplete;
+        @network.status;
+        @network.clientIP;
+        @network.clientPort;
     </div>
+
+
+
+
+
+
+
+
+                            <div>
+                           <form align="center" id="SubmitUser" hidden>
+                                <fieldset>
+                                    <input type="text" name="Id" id="Id" placeholder="Enter your Id"/>    
+                                    <input type="text" name="IPAddress" id="IPAddress" placeholder="Enter your IP Address"/>
+                                      <input type="text" name="Port" id="Port" placeholder="Enter your Port"/>
+                                      <button id="submitUser" onclick="SubmitUser()">Submit</button>
+                                </fieldset>
+                            </form>
+                            <script>
+                                function SubmitUser()
+                                 { 
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '/home/SubmitUser/',
+                                            contentType: 'application/json',
+                                            data: JSON.stringify(
+                                            {
+                                                "Id" :$('#Id').val(),
+                                                "IPAddress" :$('#IPAddress').val(),
+                                                "Port": $('#Port').val(),
+
+                                            }),
+                                            success: function(data, textStatus, jQxhr)
+                                            {
+                                                alert("User Added");
+                                            },
+                                            error: function(xhr, textStatus, error)
+                                            {
+                                                alert("Error");
+                                                console.log(xhr.statusText);
+                                                console.log(textStatus);
+                                                console.log(error);
+                                            }
+                                        });
+                                 }
+                            </script>
+                            </div>
     </body>
 }
