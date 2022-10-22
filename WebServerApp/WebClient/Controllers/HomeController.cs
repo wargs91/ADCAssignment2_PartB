@@ -16,9 +16,9 @@ namespace WebClient.Controllers
             newNetworkStatus.status = "Waiting for Client";
             newNetworkStatus.jobComplete = 0;
 
-
+            bool open = true;
             //newNetworkStatus = networkStatus;
-            ViewBag.Message = newNetworkStatus;
+            
 
             ViewBag.Title = "Ubiquity Network";
 
@@ -28,32 +28,23 @@ namespace WebClient.Controllers
 
             List<UserRegistry> userRegistries = JsonConvert.DeserializeObject<List<UserRegistry>>(restResponse.Content);
 
-            return View(userRegistries);
-        }
-        [HttpPost]
-        public IActionResult SubmitUser([FromBody] UserRegistry newUser)
-        {
-            RestClient restClient = new RestClient("http://localhost:49901/");
-            RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Post);
-            restRequest.AddJsonBody(JsonConvert.SerializeObject(newUser));
-            RestResponse restResponse = restClient.Execute(restRequest);
+            while (open == true)
+            {
+                RestClient statusRestClient = new RestClient("http://localhost:49901/");
+                RestRequest statusRestRequest = new RestRequest("api/NetworkStatus", Method.Get);
+                RestResponse statusRestResponse = restClient.Get(restRequest);
 
-            UserRegistry returnUser = JsonConvert.DeserializeObject<UserRegistry>(restResponse.Content);
-            if (returnUser != null)
-            {
-                return Ok(returnUser);
+                NetworkStatusClass serverNetworkStatus = JsonConvert.DeserializeObject<NetworkStatusClass>(statusRestResponse.Content);
+
+                if (serverNetworkStatus != null)
+                    newNetworkStatus = serverNetworkStatus;
+                Thread.Sleep(6000);
             }
-            else
-            {
-                return BadRequest();
-            }
+            
+            ViewBag.Message = newNetworkStatus;
+            return View(userRegistries);
+
         }
-        [HttpPost]
         
-        public ActionResult Create(NetworkStatusClass networkStatus)
-        {         
-            ViewBag.Message = networkStatus;
-            return View();
-        }
     }
 }
