@@ -25,18 +25,18 @@ namespace ClientGUI
         
         int JobsComplete = 0;
         public bool ActiveJob = false;
-        string serverClientPort;
+        string serverClientPort; 
         string serverClientIP;
+        int serverClientID;
         private ServerInterface foob;
+        bool disconnect = false;
         
         public MainWindow()
         {
             InitializeComponent();
-           
-            Task task = new Task(Networking);
-            task.Start();
             
-
+            Task networkingTask = new Task(Networking);
+            networkingTask.Start();
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -104,11 +104,8 @@ namespace ClientGUI
             networkStatus.jobComplete = JobsComplete;
             networkStatus.clientPort = serverClientPort;
             networkStatus.clientIP = serverClientIP;
-            
-
             string output = "The system has completed " + JobsComplete + " jobs and " + status;
             NetworkStatusDisplay.Text = output;
-
         }
            
 
@@ -121,6 +118,7 @@ namespace ClientGUI
             newClient.IPAddress = ClientIP.Text;
             serverClientIP = ClientIP.Text;
             serverClientPort = ClientPort.Text;
+            serverClientID = Int32.Parse(ID.Text);
 
             RestClient restClient = new RestClient("http://localhost:49901/");
             RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Post);
@@ -131,8 +129,9 @@ namespace ClientGUI
             {
                 MessageBox.Show("Client Registered");
             }
-            Task task2 = new Task(Server);
-            task2.Start();
+            Task serverTask = new Task(Server);
+            serverTask.Start();
+
         }
 
         public void Networking()
@@ -147,25 +146,31 @@ namespace ClientGUI
 
             while (ActiveJob == false)
             {
-                foreach (int i in Enumerable.Range(0,1).OrderBy(x => r.Next()))
+                foreach (int i in Enumerable.Range(0,length).OrderBy(x => r.Next()))
                 {
-                
+                    PythonCodeObj nextTask;
                     ChannelFactory<ServerInterface> foobFactory;
                     NetTcpBinding tcp = new NetTcpBinding();
                     //Set the URL and create the connection!
                     string IPAddress = userRegistries[i].IPAddress;
                     string Port = userRegistries[i].Port;
                     string url = "net.tcp://" + IPAddress + ":" + Port;
-                    foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
-                    foob = foobFactory.CreateChannel();
-                    PythonCodeObj nextTask = foob.GetNextTask();
-                    if (nextTask != null)
+                    try
                     {
-                        ActiveJob = true;
-                        foob.CompleteTask(nextTask);
-                        ActiveJob = false;
+                        foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
+                        foob = foobFactory.CreateChannel();
+                        nextTask = foob.GetNextTask();
+                        if (nextTask != null)
+                        {
+                            ActiveJob = true;
+                            foob.CompleteTask(nextTask);
+                            ActiveJob = false;
+                        }
                     }
-
+                    catch (EndpointNotFoundException)
+                    {
+                        //do nothing
+                    }
 
                 }
             }
@@ -173,19 +178,41 @@ namespace ClientGUI
 
         public void Server()
         {
-
-            ServiceHost host;
-            NetTcpBinding tcp = new NetTcpBinding();
-            host = new ServiceHost(typeof(PythonImplementation));
-            string url = "net.tcp://" + serverClientIP + ":" + serverClientPort;
-            host.AddServiceEndpoint(typeof(ServerInterface), tcp, url);
-            host.Open();
-            //need to post next task here
-            Thread.Sleep(100000);//what condition do I end this on to close the host
-            host.Close();
-
+            while (disconnect == false)
+            {
+                ServiceHost host;
+                NetTcpBinding tcp = new NetTcpBinding();
+                host = new ServiceHost(typeof(PythonImplementation));
+                string url = "net.tcp://" + serverClientIP + ":" + serverClientPort;
+                host.AddServiceEndpoint(typeof(ServerInterface), tcp, url);
+                try
+                {
+                    host.Open();
+                    //need to post next task here
+                    while (disconnect == false)
+                    {
+                        Thread.Sleep(10000);
+                    }
+                    host.Close();
+                }
+                catch (AddressAlreadyInUseException)
+                {
+                    MessageBox.Show("Address Already in Use");
+                    ClientPort.Text = "";
+                    ClientIP.Text = "";
+                }
+               
+            }           
         }
 
+        private void Disconnect_Click(object sender, RoutedEventArgs e)
+        {
+            disconnect = true;
+            RestClient restClient = new RestClient("http://localhost:49901/");
+            RestRequest restRequest = new RestRequest("api/UserRegistries/{id}", Method.Delete);
+            restRequest.AddUrlSegment("id", serverClientID);
+            RestResponse restResponse = restClient.Execute(restRequest);
+        }
     }
 }
 

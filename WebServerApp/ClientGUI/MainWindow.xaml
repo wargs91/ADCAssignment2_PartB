@@ -18,9 +18,11 @@
         <TextBox x:Name ="ClientPort" HorizontalAlignment="Left" Height="30" Margin="65,64,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
         <Label Content="IP" HorizontalAlignment="Left" Height="38" Margin="10,6,0,0" VerticalAlignment="Top" Width="55"/>
         <Label Content="Port" HorizontalAlignment="Left" Height="38" Margin="10,61,0,0" VerticalAlignment="Top" Width="50"/>
-        <Button x:Name="SubmitClient" Content="Submit Client" HorizontalAlignment="Left" Height="25" Margin="258,52,0,0" VerticalAlignment="Top" Width="114" Click="SubmitClientButton_Click"/>
         <TextBox x:Name ="ID" HorizontalAlignment="Left" Height="29" Margin="258,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="127"/>
+        <Button x:Name="SubmitClient" Content="Submit Client" HorizontalAlignment="Left" Height="25" Margin="258,52,0,0" VerticalAlignment="Top" Width="114" Click="SubmitClientButton_Click"/>
+
         <Label Content="ID" HorizontalAlignment="Left" Height="29" Margin="225,10,0,0" VerticalAlignment="Top" Width="28"/>
+        <Button Name ="Disconnct" Content="Disconnect" HorizontalAlignment="Left" Height="25" Margin="642,52,0,0" VerticalAlignment="Top" Width="120" Click="Disconnect_Click"/>
 
     </Grid>
 </Window>

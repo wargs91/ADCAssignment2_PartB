@@ -16,17 +16,14 @@ namespace ClientGUI
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = true)]
     internal class PythonImplementation : ServerInterface
     {
-        List<PythonCodeObj> jobList = new List<PythonCodeObj>();
+        List<PythonCodeObj> jobList;
+        PythonCodeObj pythonJob = new PythonCodeObj();
         SHA256 sha256Hash = SHA256.Create();
         PythonCodeObj ServerInterface.GetNextTask()
         {
-            for (int i = 0; i < jobList.Count; i++)
-            {
-                if (jobList[i].Completed == false)
-                    return jobList[i];
-                break;
-            }
-            return null;
+          
+
+            return pythonJob;
         }
 
         PythonCodeObj ServerInterface.CompleteTask(PythonCodeObj newTask)
@@ -58,6 +55,7 @@ namespace ClientGUI
             byte[] hash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(data));
             newJob.codeHash = hash;
             jobList.Add(newJob);
+            pythonJob = newJob;
             return newJob;
         }
 

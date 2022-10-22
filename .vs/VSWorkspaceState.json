@@ -4,8 +4,9 @@
     "\\WebServerApp",
     "\\WebServerApp\\ClientGUI",
     "\\WebServerApp\\WebClient",
-    "\\WebServerApp\\WebClient\\Controllers"
+    "\\WebServerApp\\WebClient\\Views",
+    "\\WebServerApp\\WebClient\\Views\\Home"
   ],
-  "SelectedNode": "\\WebServerApp\\ClientGUI\\MainWindow.xaml",
+  "SelectedNode": "\\WebServerApp\\ClientGUI\\MainWindow.xaml.cs",
   "PreviewInSolutionExplorer": false
 }
