@@ -8,22 +8,29 @@ using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 using System.Text;
 using System.Security.Cryptography;
+using RestSharp;
+using Newtonsoft.Json;
 
 
 namespace ClientGUI
 {
+    
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = true)]
     internal class PythonImplementation : ServerInterface
     {
-        List<PythonCodeObj> jobList;
-        PythonCodeObj pythonJob = new PythonCodeObj();
+        public List<PythonCodeObj> jobList = new List<PythonCodeObj>();
+        public PythonCodeObj pythonJob;//This keeps returning to null and then cannot pull the python Job
+
+
         SHA256 sha256Hash = SHA256.Create();
         PythonCodeObj ServerInterface.GetNextTask()
         {
-          
+            if (pythonJob != null)
+                return pythonJob;
 
-            return pythonJob;
+            else
+                return null;
         }
 
         PythonCodeObj ServerInterface.CompleteTask(PythonCodeObj newTask)
@@ -78,7 +85,15 @@ namespace ClientGUI
             byte[] textBytes = Encoding.UTF8.GetBytes(code);
             return Convert.ToBase64String(textBytes);
         }
-       
+       NetworkStatus ServerInterface.PostNetworkStatus(NetworkStatus status)
+        {
+            RestClient restClient = new RestClient("http://localhost:49901/");
+            RestRequest restRequest = new RestRequest("api/NetworkStatus/Create", Method.Post);
+            restRequest.AddJsonBody(JsonConvert.SerializeObject(status));
+            RestResponse restResponse = restClient.Execute(restRequest);
+
+            return status;
+        }
         
             
         

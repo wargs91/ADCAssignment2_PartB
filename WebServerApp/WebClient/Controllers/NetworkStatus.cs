@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebClient.Models;
 
 namespace WebClient.Controllers
 {
     public class NetworkStatus : Controller
     {
-        public NetworkStatus newNetworkStatus = new NetworkStatus();
+        
         // GET: NetworkStatus
         public ActionResult Index()
         {
@@ -25,13 +26,20 @@ namespace WebClient.Controllers
             return View();
         }
 
-        // POST: NetworkStatus/Create
+        // POST: Home/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(NetworkStatus networkStatus)
         {
-            newNetworkStatus = networkStatus;
-            ViewBag.Message = networkStatus;
+            NetworkStatusClass newNetworkStatus = new NetworkStatusClass();
+            newNetworkStatus.clientIP = "123";
+            newNetworkStatus.clientPort = "123456";
+            newNetworkStatus.status = "Currently Working on job";
+            newNetworkStatus.jobComplete = 5;
+
+
+            //newNetworkStatus = networkStatus;
+            ViewBag.Message = newNetworkStatus;
             return View(); 
         }
 

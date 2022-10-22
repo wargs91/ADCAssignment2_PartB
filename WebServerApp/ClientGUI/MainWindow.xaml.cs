@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using Newtonsoft.Json;
@@ -23,14 +24,16 @@ namespace ClientGUI
     {
         List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
         
-        int JobsComplete = 0;
+        public int JobsComplete = 0;
         public bool ActiveJob = false;
-        string serverClientPort; 
-        string serverClientIP;
-        int serverClientID;
+        public string serverClientPort; 
+        public string serverClientIP;
+        public int serverClientID;
         private ServerInterface foob;
-        bool disconnect = false;
-        
+        public bool disconnect = false;
+        public NetworkStatus networkStatus = new NetworkStatus();
+        public string output = "wating for jobs";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -89,22 +92,7 @@ namespace ClientGUI
         }
 
         private void ShowJobsButton_Click(object sender, RoutedEventArgs e)
-        {
-            NetworkStatus networkStatus = new NetworkStatus();
-            string status;
-            if( ActiveJob == true)
-            {
-                status = "is currently working on a job";
-            }
-            else 
-            {
-                status = "is not currently working on a job";
-            }
-            networkStatus.status = status;
-            networkStatus.jobComplete = JobsComplete;
-            networkStatus.clientPort = serverClientPort;
-            networkStatus.clientIP = serverClientIP;
-            string output = "The system has completed " + JobsComplete + " jobs and " + status;
+        {                       
             NetworkStatusDisplay.Text = output;
         }
            
@@ -154,7 +142,7 @@ namespace ClientGUI
                     //Set the URL and create the connection!
                     string IPAddress = userRegistries[i].IPAddress;
                     string Port = userRegistries[i].Port;
-                    string url = "net.tcp://" + IPAddress + ":" + Port;
+                    string url = ("net.tcp://" + IPAddress + ":" + Port);
                     try
                     {
                         foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
@@ -164,6 +152,7 @@ namespace ClientGUI
                         {
                             ActiveJob = true;
                             foob.CompleteTask(nextTask);
+                            SendNetworkStatus();                            
                             ActiveJob = false;
                         }
                     }
@@ -183,8 +172,8 @@ namespace ClientGUI
                 ServiceHost host;
                 NetTcpBinding tcp = new NetTcpBinding();
                 host = new ServiceHost(typeof(PythonImplementation));
-                string url = "net.tcp://" + serverClientIP + ":" + serverClientPort;
-                host.AddServiceEndpoint(typeof(ServerInterface), tcp, url);
+                string serverUrl = ("net.tcp://" + serverClientIP + ":" + serverClientPort);
+                host.AddServiceEndpoint(typeof(ServerInterface), tcp, serverUrl);
                 try
                 {
                     host.Open();
@@ -212,6 +201,28 @@ namespace ClientGUI
             RestRequest restRequest = new RestRequest("api/UserRegistries/{id}", Method.Delete);
             restRequest.AddUrlSegment("id", serverClientID);
             RestResponse restResponse = restClient.Execute(restRequest);
+        }
+
+        private void SendNetworkStatus()
+        {
+            string status;
+            if (ActiveJob == true)
+            {
+                status = "is currently working on a job";
+            }
+            else
+            {
+                status = "is not currently working on a job";
+            }
+            networkStatus.status = status;
+            networkStatus.jobComplete = JobsComplete;
+            networkStatus.clientPort = serverClientPort;
+            networkStatus.clientIP = serverClientIP;
+            string output = "The system has completed " + JobsComplete + " jobs and " + status; networkStatus.status = status;
+            networkStatus.jobComplete = JobsComplete;
+            networkStatus.clientPort = serverClientPort;
+            networkStatus.clientIP = serverClientIP;
+            foob.PostNetworkStatus(networkStatus);
         }
     }
 }
