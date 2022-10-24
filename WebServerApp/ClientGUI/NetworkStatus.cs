@@ -7,10 +7,11 @@ namespace ClientGUI
 {
     public class NetworkStatus
     {
-        public int jobComplete { get; set; }
+        public int Id { get; set; }
+        public string IPAddress { get; set; }
+        public string Port { get; set; }
+        public Nullable<int> JobsCompleted { get; set; }
         public string status { get; set; }
-        public string clientIP { get; set; }
-        public string clientPort { get; set; }
     }
 
 }

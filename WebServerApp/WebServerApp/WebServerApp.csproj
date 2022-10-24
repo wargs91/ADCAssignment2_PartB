@@ -164,12 +164,29 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\NetworkStatusController.cs" />
+    <Compile Include="Controllers\NetworkStatusTablesController.cs" />
     <Compile Include="Controllers\UserRegistriesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\NetworkStatusClass.cs" />
+    <Compile Include="Models\NetworkStatus.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NetworkStatus.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NetworkStatus.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NetworkStatus.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NetworkStatus.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NetworkStatus.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NetworkStatusTable.cs">
+      <DependentUpon>NetworkStatus.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\UserRegistry.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -203,6 +220,16 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Models\NetworkStatus.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>NetworkStatus.edmx</DependentUpon>
+      <LastGenOutput>NetworkStatus.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\NetworkStatus.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>NetworkStatus.edmx</DependentUpon>
+      <LastGenOutput>NetworkStatus.cs</LastGenOutput>
+    </Content>
     <Content Include="Models\UserRegistry.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UserRegistry.Context.cs</LastGenOutput>
@@ -240,6 +267,13 @@
     </EntityDeploy>
     <Content Include="Models\UserRegistry.edmx.diagram">
       <DependentUpon>UserRegistry.edmx</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Models\NetworkStatus.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NetworkStatus.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\NetworkStatus.edmx.diagram">
+      <DependentUpon>NetworkStatus.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />

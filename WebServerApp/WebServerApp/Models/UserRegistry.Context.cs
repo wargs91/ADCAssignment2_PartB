@@ -26,5 +26,7 @@ namespace WebServerApp.Models
         }
     
         public virtual DbSet<UserRegistry> UserRegistries { get; set; }
+
+        public System.Data.Entity.DbSet<WebServerApp.Models.NetworkStatusTable> NetworkStatusTables { get; set; }
     }
 }

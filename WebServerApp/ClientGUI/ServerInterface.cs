@@ -18,7 +18,7 @@ namespace ClientGUI
         [OperationContract]
         PythonCodeObj PostNewJob(PythonCodeObj newJob);
         [OperationContract]
-        NetworkStatus PostNetworkStatus(NetworkStatus status);
+        NetworkStatus PutNetworkStatus(NetworkStatus status);
 
     }
 }

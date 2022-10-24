@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.ServiceModel;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
-using System.Text;
-using System.Security.Cryptography;
+ using System.Security.Cryptography;
 using RestSharp;
 using Newtonsoft.Json;
 
 
 namespace ClientGUI
 {
-    
+
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = true)]
     internal class PythonImplementation : ServerInterface
     {
         
-        public PythonCodeObj pythonJob;//This keeps returning to null and then cannot pull the python Job
+        public PythonCodeObj pythonJob;//this keeps returning a null value
         SHA256 sha256Hash = SHA256.Create();
         PythonCodeObj ServerInterface.PostNewJob(PythonCodeObj newJob)
         {
@@ -29,7 +25,7 @@ namespace ClientGUI
             byte[] hash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(data));
             newJob.codeHash = hash;
             
-            pythonJob = newJob;
+            this.pythonJob = newJob;
             return newJob;
         }
 
@@ -52,10 +48,12 @@ namespace ClientGUI
             byte[] textBytes = Encoding.UTF8.GetBytes(code);
             return Convert.ToBase64String(textBytes);
         }
-        NetworkStatus ServerInterface.PostNetworkStatus(NetworkStatus status)
+       
+        NetworkStatus ServerInterface.PutNetworkStatus(NetworkStatus status)
         {
             RestClient restClient = new RestClient("http://localhost:49901/");
-            RestRequest restRequest = new RestRequest("api/NetworkStatus", Method.Post);
+            RestRequest restRequest = new RestRequest("api/NetworkStatusTables/{id}", Method.Put);
+            restRequest.AddUrlSegment("id", status.Id);
             restRequest.AddJsonBody(JsonConvert.SerializeObject(status));
             RestResponse restResponse = restClient.Execute(restRequest);
 
@@ -65,31 +63,30 @@ namespace ClientGUI
         PythonCodeObj ServerInterface.GetNextTask()
         {
             
-            
-            if (pythonJob != null)
+            if (this.pythonJob != null)
             { 
-            return pythonJob;
+            return this.pythonJob;
                 
             }                  
             else 
                 return null;
         }
 
-        PythonCodeObj ServerInterface.CompleteTask(PythonCodeObj newTask)
+        PythonCodeObj ServerInterface.CompleteTask(PythonCodeObj postedNewTask)
         {
 
-            string checkData = newTask.PyCodeBlock;
+            string checkData = postedNewTask.PyCodeBlock;
             byte[] checkHash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(checkData));
-            if(newTask.codeHash == checkHash)
+            if(postedNewTask.codeHash == checkHash)
             {
-                string codeBlock = Decode(newTask.PyCodeBlock);
+                string codeBlock = Decode(postedNewTask.PyCodeBlock);
                 ScriptEngine engine = Python.CreateEngine();
                 ScriptScope scope = engine.CreateScope();
                 engine.Execute(codeBlock, scope);
-                dynamic pythonFunction = scope.GetVariable(newTask.PyFunName);
+                dynamic pythonFunction = scope.GetVariable(postedNewTask.PyFunName);
                 var result = pythonFunction();//need too figure out how to modify this for use
-                newTask.Completed = true;
-                return newTask;
+                postedNewTask.Completed = true;
+                return postedNewTask;
             }
             else
             {

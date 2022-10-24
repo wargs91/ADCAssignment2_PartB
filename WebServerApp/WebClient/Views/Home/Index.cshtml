@@ -3,59 +3,49 @@
 *@
 @{
     @using WebClient.Models;
-    @model IEnumerable<UserRegistry>;
+    @model IEnumerable<NetworkStatusTable>;
+    }
 
     <head>
-                                              
-                            <script type="text/javascript">
-                                                
-                                function AutoRefresh(t){
-                                    setTimeout("location.reload(true);", t);
-                                }
+                                                          
+    <script type="text/javascript">
+                                                            
+        function AutoRefresh(t){
+            setTimeout("location.reload(true);", t);
+        }
 
-                            </script>
+    </script>
     </head>
     <body onload="JavaScript: AutoRefresh(60000);">
-            <h1>Welcome to the Ubiquity Network</h1>
-            <div id="Users">
-            <p>Current registered user IP and Port</p>        
-                                                
-            <table align="center">
-                <tr>
-                <th>IP Address</th>
-                <th>Port</th>
-            </tr>
-            @foreach(var user in Model)
-    {
-            <tr>
-                <td>@user.IPAddress</td>
-                <td>@user.Port</td>
-            </tr>
-    }
-                </table>
-            </div>
-            @{   
-            NetworkStatusClass network = ViewBag.Message;
+        <h1>Welcome to the Ubiquity Network</h1>
+        <div id="Users">
+            
+                                                            
+                   
         
-                <div>
-                <p>Current registered user status</p>
-                <table align="center">  
-                <tr>
-                <th> Jobs Complete</th>
-                <th> Network Status</th>
-                <th> Client IP</th>
-                <th> Client Port</th>
-                </tr>
-                <tr>
-                <td>@network.jobComplete</td>
-                    <td>    @network.status </td>
-                    <td>    @network.clientIP   </td>
-                    <td>    @network.clientPort </td>
-                </tr>
-                    </table>  
-                </div>
+    <p>Current registered user status</p>
+    <table align="center">  
+    <tr>
+    <th> Client IP</th>
+    <th> Client Port</th>
+    <th> Jobs Complete</th>
+    <th> Network Status</th>
+    
+    </tr>
+                                        
+    @foreach(var network in Model)
+    {
+    <tr>
+        <td>@network.IPAddress   </td>
+        <td>@network.Port </td>
+        <td>@network.JobsCompleted </td>
+        <td>@network.status </td>
+    </tr>
+    }
+     </table>  
+    </div>
 
-           }
+                       
 
     </body>
-}
+

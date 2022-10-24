@@ -108,14 +108,31 @@ namespace ClientGUI
             serverClientPort = ClientPort.Text;
             serverClientID = Int32.Parse(ID.Text);
 
+            networkStatus.Id = serverClientID;
+            networkStatus.IPAddress = serverClientIP;
+            networkStatus.Port = serverClientPort;
+            networkStatus.status = "Connected and waiting for jobs";
+            networkStatus.JobsCompleted = JobsComplete;
+
             RestClient restClient = new RestClient("http://localhost:49901/");
             RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Post);
             restRequest.AddJsonBody(JsonConvert.SerializeObject(newClient));
             RestResponse restResponse = restClient.Execute(restRequest);
             UserRegistry returnUser = JsonConvert.DeserializeObject<UserRegistry>(restResponse.Content);
-            if (returnUser != null)
+
+            RestClient statusRestClient = new RestClient("http://localhost:49901/");
+            RestRequest statusRestRequest = new RestRequest("api/NetworkStatusTables", Method.Post);
+            statusRestRequest.AddJsonBody(JsonConvert.SerializeObject(networkStatus));
+            RestResponse statusRestResponse = statusRestClient.Execute(statusRestRequest);
+            NetworkStatusTable returnNetworkStatus = JsonConvert.DeserializeObject<NetworkStatusTable>(statusRestResponse.Content);
+
+            if (returnUser != null && returnNetworkStatus != null)
             {
                 MessageBox.Show("Client Registered");
+            }
+            else
+            {
+                MessageBox.Show("An Error Occurred, Client Not Reqistered");
             }
             Task serverTask = new Task(Server);
             serverTask.Start();
@@ -139,7 +156,7 @@ namespace ClientGUI
                     PythonCodeObj nextTask;
                     ChannelFactory<ServerInterface> foobFactory;
                     NetTcpBinding tcp = new NetTcpBinding();
-                    //Set the URL and create the connection!
+                    //Set the URL and create the connection!tha
                     string IPAddress = userRegistries[i].IPAddress;
                     string Port = userRegistries[i].Port;
                     string url = ("net.tcp://" + IPAddress + ":" + Port);
@@ -151,8 +168,12 @@ namespace ClientGUI
                         if (nextTask != null)
                         {
                             ActiveJob = true;
+                            networkStatus.status = "currently working on a job";
+                            networkStatus.Id = serverClientID;
+                            foob.PutNetworkStatus(networkStatus);
                             foob.CompleteTask(nextTask);
-                            SendNetworkStatus();                            
+                            networkStatus.status = "not currently working on a job";
+                            foob.PutNetworkStatus(networkStatus);
                             ActiveJob = false;
                         }
                     }
@@ -203,27 +224,7 @@ namespace ClientGUI
             RestResponse restResponse = restClient.Execute(restRequest);
         }
 
-        private void SendNetworkStatus()
-        {
-            string status;
-            if (ActiveJob == true)
-            {
-                status = "is currently working on a job";
-            }
-            else
-            {
-                status = "is not currently working on a job";
-            }
-            networkStatus.status = status;
-            networkStatus.jobComplete = JobsComplete;
-            networkStatus.clientPort = serverClientPort;
-            networkStatus.clientIP = serverClientIP;
-            string output = "The system has completed " + JobsComplete + " jobs and " + status; networkStatus.status = status;
-            networkStatus.jobComplete = JobsComplete;
-            networkStatus.clientPort = serverClientPort;
-            networkStatus.clientIP = serverClientIP;
-            foob.PostNetworkStatus(networkStatus);
-        }
+        
     }
 }
 
