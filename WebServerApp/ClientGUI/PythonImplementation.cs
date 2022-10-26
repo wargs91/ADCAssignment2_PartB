@@ -85,13 +85,16 @@ namespace ClientGUI
             {
                 try
                 {
+                    int var1 = 2;
+                    int var2 = 3;
                     string codeBlock = Decode(postedNewTask.PyCodeBlock);
                     ScriptEngine engine = Python.CreateEngine();
                     ScriptScope scope = engine.CreateScope();
                     engine.Execute(codeBlock, scope);
-                    dynamic pythonFunction = scope.GetVariable(postedNewTask.PyFunName);
-                    var result = pythonFunction();//need too figure out how to modify this for use
+                    dynamic testFunction = scope.GetVariable("test_func");
+                    var result = testFunction(var1,var2);//need too figure out how to modify this for use
                     postedNewTask.Completed = true;
+                    postedNewTask.result = result.ToString();
                     pythonJob = postedNewTask;
                     return postedNewTask;
                     

@@ -33,7 +33,6 @@ namespace ClientGUI
         public MainWindow()
         {
             InitializeComponent();
-            
             Task networkingTask = new Task(Networking);
             networkingTask.Start();
         }
@@ -167,21 +166,23 @@ namespace ClientGUI
                             if (nextTask.Completed == false && nextTask.id != NewCodeTask.id)
                             {
                                 ActiveJob = true;
-                                networkStatus.status = "currently working on a job";
-                                //UpdateDisplay(networkStatus.status);
+                                networkStatus.status = "Currently working on a job";
+                                UpdateNetworkDisplay(networkStatus.status);
                                 networkStatus.Id = serverClientID;
                                 foob.PutNetworkStatus(networkStatus);
                                 nextTask = foob.CompleteTask(nextTask);
                                 networkStatus.JobsCompleted++;
-                                networkStatus.status = "not currently working on a job";
-                                resultOutput = nextTask.result;
-                                //UpdateDisplay(networkStatus.status);
+                                networkStatus.status = "Not currently working on a job\n"+networkStatus.JobsCompleted+" Jobs Completed";
+                                UpdateNetworkDisplay(networkStatus.status);
+                                UpdateDisplay(nextTask.result);
+                                                                
                                 foob.PutNetworkStatus(networkStatus);
                                 ActiveJob = false;
                             }
                             if (nextTask.Completed == true && nextTask.id == NewCodeTask.id)
                             {
                                 resultOutput = "Computation completed remotely.\nResult:\n" + nextTask.result;
+                                UpdateDisplay(resultOutput);
                             }
                         }
                     }
@@ -189,8 +190,7 @@ namespace ClientGUI
                     {
                         //do nothing
                     }
-
-                    Results.Text = resultOutput;
+                    
                 }
             }
         }
@@ -225,7 +225,18 @@ namespace ClientGUI
         }
         public void UpdateDisplay(string input)
         {
-            NetworkStatusDisplay.Text = input;
+            this.Dispatcher.Invoke(() =>
+            {
+                Results.Text = input;
+            });
+        }
+
+        public void UpdateNetworkDisplay(string input)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                NetworkStatusDisplay.Text = input;
+            });
         }
         private void Disconnect_Click(object sender, RoutedEventArgs e)
         {
@@ -234,6 +245,9 @@ namespace ClientGUI
             RestRequest restRequest = new RestRequest("api/UserRegistries/{id}", Method.Delete);
             restRequest.AddUrlSegment("id", serverClientID);
             RestResponse restResponse = restClient.Execute(restRequest);
+
+            MessageBox.Show("Client Disconnected");
+
         }
                   
     }
