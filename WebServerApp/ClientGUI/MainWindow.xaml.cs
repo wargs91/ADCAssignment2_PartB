@@ -171,15 +171,15 @@ namespace ClientGUI
                                 networkStatus.Id = serverClientID;
                                 foob.PutNetworkStatus(networkStatus);
                                 nextTask = foob.CompleteTask(nextTask);
-                                networkStatus.JobsCompleted++;
-                                networkStatus.status = "Not currently working on a job\n"+networkStatus.JobsCompleted+" Jobs Completed";
+                                JobsComplete++;
+                                networkStatus.status = "Not currently working on a job\n"+JobsComplete+" Jobs Completed";
                                 UpdateNetworkDisplay(networkStatus.status);
                                 UpdateDisplay(nextTask.result);
-                                                                
+                                                               
                                 foob.PutNetworkStatus(networkStatus);
                                 ActiveJob = false;
                             }
-                            if (nextTask.Completed == true && nextTask.id == NewCodeTask.id)
+                            else if (nextTask.Completed == true && nextTask.id == NewCodeTask.id)
                             {
                                 resultOutput = "Computation completed remotely.\nResult:\n" + nextTask.result;
                                 UpdateDisplay(resultOutput);
