@@ -17,7 +17,7 @@ namespace ClientGUI
     internal class PythonImplementation : ServerInterface
     {
         
-        public static PythonCodeObj pythonJob ;//can't store objects this way
+        public static PythonCodeObj pythonJob ;
 
         public static SHA256 sha256Hash = SHA256.Create();
         PythonCodeObj ServerInterface.PostNewJob(PythonCodeObj newJob)
@@ -80,6 +80,7 @@ namespace ClientGUI
             string checkData = postedNewTask.PyCodeBlock;
             byte[] checkHash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(checkData));
             bool byteArrayComparison = ByteArrayCompare(checkHash, postedNewTask.codeHash);
+            postedNewTask.PyFunName = "newJob";
             if(byteArrayComparison == true)
             {
                 try
@@ -91,13 +92,18 @@ namespace ClientGUI
                     dynamic pythonFunction = scope.GetVariable(postedNewTask.PyFunName);
                     var result = pythonFunction();//need too figure out how to modify this for use
                     postedNewTask.Completed = true;
+                    pythonJob = postedNewTask;
                     return postedNewTask;
+                    
                 }
                 catch(Microsoft.Scripting.SyntaxErrorException)
                 {
-                    postedNewTask.Completed = false;
+                    postedNewTask.Completed = true;
                     postedNewTask.result = "invalid syntax value, could not complete";
+                    pythonJob = postedNewTask;
+                    return postedNewTask;
                 }
+                
             }
             else
             {

@@ -5,12 +5,7 @@ using System.Windows;
 using Newtonsoft.Json;
 using RestSharp;
 using WebServerApp.Models;
-using IronPython.Compiler;
 using System.ServiceModel;
-using IronPython.Hosting;
-using IronPython.Modules;
-using IronPython;
-using Microsoft.Scripting.Hosting;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
@@ -22,7 +17,7 @@ namespace ClientGUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<PythonCodeObj> NewCodeTaskList = new List<PythonCodeObj>();
+        PythonCodeObj NewCodeTask = new PythonCodeObj();
         
         public int JobsComplete = 0;
         public bool ActiveJob = false;
@@ -33,6 +28,7 @@ namespace ClientGUI
         public bool disconnect = false;
         public NetworkStatus networkStatus = new NetworkStatus();
         public string output = "wating for jobs";
+        public string resultOutput;
 
         public MainWindow()
         {
@@ -73,11 +69,11 @@ namespace ClientGUI
 
         public void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            PythonCodeObj NewCodeTask = new PythonCodeObj();
+            
             NewCodeTask.id = DateTime.Now.ToString();
             NewCodeTask.PyCodeBlock = PythonInput.Text;
             NewCodeTask.Completed = false;
-            NewCodeTaskList.Add(NewCodeTask);
+            
             ChannelFactory<ServerInterface> foobFactory;
             NetTcpBinding tcp = new NetTcpBinding();
             //Set the URL and create the connection!
@@ -151,39 +147,50 @@ namespace ClientGUI
 
             while (ActiveJob == false)
             {
-                foreach (int i in Enumerable.Range(0,length).OrderBy(x => r.Next()))
+                foreach (int i in Enumerable.Range(0, length).OrderBy(x => r.Next()))
                 {
                     PythonCodeObj nextTask;
                     ChannelFactory<ServerInterface> foobFactory;
                     NetTcpBinding tcp = new NetTcpBinding();
                     //Set the URL and create the connection!tha
-                    if (userRegistries[i].Id != serverClientID)
+                    
+                    string IPAddress = userRegistries[i].IPAddress;
+                    string Port = userRegistries[i].Port;
+                    string url = ("net.tcp://" + IPAddress + ":" + Port);
+                    try
                     {
-                        string IPAddress = userRegistries[i].IPAddress;
-                        string Port = userRegistries[i].Port;
-                        string url = ("net.tcp://" + IPAddress + ":" + Port);
-                        try
+                        foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
+                        foob = foobFactory.CreateChannel();
+                        nextTask = foob.GetNextTask();
+                        if (nextTask != null)
                         {
-                            foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
-                            foob = foobFactory.CreateChannel();
-                            nextTask = foob.GetNextTask();
-                            if (nextTask != null)
+                            if (nextTask.Completed == false && nextTask.id != NewCodeTask.id)
                             {
                                 ActiveJob = true;
                                 networkStatus.status = "currently working on a job";
+                                //UpdateDisplay(networkStatus.status);
                                 networkStatus.Id = serverClientID;
                                 foob.PutNetworkStatus(networkStatus);
-                                foob.CompleteTask(nextTask);
+                                nextTask = foob.CompleteTask(nextTask);
+                                networkStatus.JobsCompleted++;
                                 networkStatus.status = "not currently working on a job";
+                                resultOutput = nextTask.result;
+                                //UpdateDisplay(networkStatus.status);
                                 foob.PutNetworkStatus(networkStatus);
                                 ActiveJob = false;
                             }
-                        }
-                        catch (EndpointNotFoundException)
-                        {
-                            //do nothing
+                            if (nextTask.Completed == true && nextTask.id == NewCodeTask.id)
+                            {
+                                resultOutput = "Computation completed remotely.\nResult:\n" + nextTask.result;
+                            }
                         }
                     }
+                    catch (EndpointNotFoundException)
+                    {
+                        //do nothing
+                    }
+
+                    Results.Text = resultOutput;
                 }
             }
         }
@@ -216,7 +223,10 @@ namespace ClientGUI
                
             }           
         }
-
+        public void UpdateDisplay(string input)
+        {
+            NetworkStatusDisplay.Text = input;
+        }
         private void Disconnect_Click(object sender, RoutedEventArgs e)
         {
             disconnect = true;
@@ -225,8 +235,7 @@ namespace ClientGUI
             restRequest.AddUrlSegment("id", serverClientID);
             RestResponse restResponse = restClient.Execute(restRequest);
         }
-
-        
+                  
     }
 }
 

@@ -13,7 +13,7 @@
         <Button x:Name="SubmitButton" Content="Submit" HorizontalAlignment="Left" Height="25" Margin="200,379,0,0" VerticalAlignment="Top" Width="115" Click="SubmitButton_Click"/>
         <Button x:Name="ShowJobsButton" Content="Show Jobs and Network Status" HorizontalAlignment="Left" Height="25" Margin="400,52,0,0" VerticalAlignment="Top" Width="210" Click="ShowJobsButton_Click"/>
         <Label Content="Network and Job Status" HorizontalAlignment="Left" Height="38" Margin="400,82,0,0" VerticalAlignment="Top" Width="210"/>
-        <TextBlock x:Name ="NetworkStatusDisplay" TextWrapping="Wrap" Text="" Margin="400,107,55,82"/>
+        <TextBlock x:Name ="NetworkStatusDisplay" TextWrapping="Wrap" Text="" Margin="400,107,55,217"/>
         <TextBox x:Name ="ClientIP" HorizontalAlignment="Left" Height="29" Margin="65,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
         <TextBox x:Name ="ClientPort" HorizontalAlignment="Left" Height="30" Margin="65,64,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
         <Label Content="IP" HorizontalAlignment="Left" Height="38" Margin="10,6,0,0" VerticalAlignment="Top" Width="55"/>
@@ -22,7 +22,9 @@
         <Button x:Name="SubmitClient" Content="Submit Client" HorizontalAlignment="Left" Height="25" Margin="258,52,0,0" VerticalAlignment="Top" Width="114" Click="SubmitClientButton_Click"/>
 
         <Label Content="ID" HorizontalAlignment="Left" Height="29" Margin="225,10,0,0" VerticalAlignment="Top" Width="28"/>
-        <Button Name ="Disconnct" Content="Disconnect" HorizontalAlignment="Left" Height="25" Margin="642,52,0,0" VerticalAlignment="Top" Width="120" Click="Disconnect_Click"/>
+        <Button Name ="Disconnect" Content="Disconnect" HorizontalAlignment="Left" Height="25" Margin="642,52,0,0" VerticalAlignment="Top" Width="120" Click="Disconnect_Click"/>
+        <TextBlock x:Name ="Results" TextWrapping="Wrap" Text="" Margin="400,309,55,30"/>
+        <Label Content="Results" HorizontalAlignment="Left" Height="38" Margin="400,266,0,0" VerticalAlignment="Top" Width="210"/>
 
     </Grid>
 </Window>
