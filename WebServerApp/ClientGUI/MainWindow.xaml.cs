@@ -157,31 +157,33 @@ namespace ClientGUI
                     ChannelFactory<ServerInterface> foobFactory;
                     NetTcpBinding tcp = new NetTcpBinding();
                     //Set the URL and create the connection!tha
-                    string IPAddress = userRegistries[i].IPAddress;
-                    string Port = userRegistries[i].Port;
-                    string url = ("net.tcp://" + IPAddress + ":" + Port);
-                    try
+                    if (userRegistries[i].Id != serverClientID)
                     {
-                        foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
-                        foob = foobFactory.CreateChannel();
-                        nextTask = foob.GetNextTask();
-                        if (nextTask != null)
+                        string IPAddress = userRegistries[i].IPAddress;
+                        string Port = userRegistries[i].Port;
+                        string url = ("net.tcp://" + IPAddress + ":" + Port);
+                        try
                         {
-                            ActiveJob = true;
-                            networkStatus.status = "currently working on a job";
-                            networkStatus.Id = serverClientID;
-                            foob.PutNetworkStatus(networkStatus);
-                            foob.CompleteTask(nextTask);
-                            networkStatus.status = "not currently working on a job";
-                            foob.PutNetworkStatus(networkStatus);
-                            ActiveJob = false;
+                            foobFactory = new ChannelFactory<ServerInterface>(tcp, url);
+                            foob = foobFactory.CreateChannel();
+                            nextTask = foob.GetNextTask();
+                            if (nextTask != null)
+                            {
+                                ActiveJob = true;
+                                networkStatus.status = "currently working on a job";
+                                networkStatus.Id = serverClientID;
+                                foob.PutNetworkStatus(networkStatus);
+                                foob.CompleteTask(nextTask);
+                                networkStatus.status = "not currently working on a job";
+                                foob.PutNetworkStatus(networkStatus);
+                                ActiveJob = false;
+                            }
+                        }
+                        catch (EndpointNotFoundException)
+                        {
+                            //do nothing
                         }
                     }
-                    catch (EndpointNotFoundException)
-                    {
-                        //do nothing
-                    }
-
                 }
             }
         }

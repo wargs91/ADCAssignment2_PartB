@@ -6,6 +6,7 @@ using Microsoft.Scripting.Hosting;
  using System.Security.Cryptography;
 using RestSharp;
 using Newtonsoft.Json;
+using System.Runtime.Remoting;
 
 
 namespace ClientGUI
@@ -16,16 +17,17 @@ namespace ClientGUI
     internal class PythonImplementation : ServerInterface
     {
         
-        public PythonCodeObj pythonJob;//this keeps returning a null value
-        SHA256 sha256Hash = SHA256.Create();
+        public static PythonCodeObj pythonJob ;//can't store objects this way
+
+        public static SHA256 sha256Hash = SHA256.Create();
         PythonCodeObj ServerInterface.PostNewJob(PythonCodeObj newJob)
         {
             newJob.PyCodeBlock = Encode(newJob.PyCodeBlock);
             string data = newJob.PyCodeBlock;
             byte[] hash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(data));
             newJob.codeHash = hash;
-            
-            this.pythonJob = newJob;
+
+            pythonJob = newJob;
             return newJob;
         }
 
@@ -63,9 +65,9 @@ namespace ClientGUI
         PythonCodeObj ServerInterface.GetNextTask()
         {
             
-            if (this.pythonJob != null)
+            if (pythonJob != null)
             { 
-            return this.pythonJob;
+            return pythonJob;
                 
             }                  
             else 
@@ -77,24 +79,44 @@ namespace ClientGUI
 
             string checkData = postedNewTask.PyCodeBlock;
             byte[] checkHash = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(checkData));
-            if(postedNewTask.codeHash == checkHash)
+            bool byteArrayComparison = ByteArrayCompare(checkHash, postedNewTask.codeHash);
+            if(byteArrayComparison == true)
             {
-                string codeBlock = Decode(postedNewTask.PyCodeBlock);
-                ScriptEngine engine = Python.CreateEngine();
-                ScriptScope scope = engine.CreateScope();
-                engine.Execute(codeBlock, scope);
-                dynamic pythonFunction = scope.GetVariable(postedNewTask.PyFunName);
-                var result = pythonFunction();//need too figure out how to modify this for use
-                postedNewTask.Completed = true;
-                return postedNewTask;
+                try
+                {
+                    string codeBlock = Decode(postedNewTask.PyCodeBlock);
+                    ScriptEngine engine = Python.CreateEngine();
+                    ScriptScope scope = engine.CreateScope();
+                    engine.Execute(codeBlock, scope);
+                    dynamic pythonFunction = scope.GetVariable(postedNewTask.PyFunName);
+                    var result = pythonFunction();//need too figure out how to modify this for use
+                    postedNewTask.Completed = true;
+                    return postedNewTask;
+                }
+                catch(Microsoft.Scripting.SyntaxErrorException)
+                {
+                    postedNewTask.Completed = false;
+                    postedNewTask.result = "invalid syntax value, could not complete";
+                }
             }
             else
             {
-                return null;
+               return null;
             }
         }
 
-       
+     static bool ByteArrayCompare(byte[] array1, byte[] array2)
+        {
+            if(array1.Length != array2.Length)
+            {
+                return false;
+            }
+            for(int i =0; i<array1.Length; i++)
+                if (array1[i] != array2[i])
+                    return false;
+
+            return true;
+        }
             
         
     }

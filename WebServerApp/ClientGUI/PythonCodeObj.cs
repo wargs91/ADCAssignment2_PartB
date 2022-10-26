@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClientGUI
 {
-    public class PythonCodeObj
+    public class PythonCodeObj : MarshalByRefObject
     {
         public string id { get; set; }
         public string PyCodeBlock{ get; set; }
