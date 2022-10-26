@@ -136,16 +136,17 @@ namespace ClientGUI
 
         public void Networking()
         {
-            RestClient restClient = new RestClient("http://localhost:49901/");
-            RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Get);
-            RestResponse restResponse = restClient.Get(restRequest);
-            List<UserRegistry> userRegistries = JsonConvert.DeserializeObject<List<UserRegistry>>(restResponse.Content);
-            Random rnd = new Random();
-            int length = userRegistries.Count;
-            Random r = new Random(length);
-
-            while (ActiveJob == false)
+            while (disconnect == false)
             {
+                RestClient restClient = new RestClient("http://localhost:49901/");
+                RestRequest restRequest = new RestRequest("api/UserRegistries", Method.Get);
+                RestResponse restResponse = restClient.Get(restRequest);
+                List<UserRegistry> userRegistries = JsonConvert.DeserializeObject<List<UserRegistry>>(restResponse.Content);
+                Random rnd = new Random();
+                int length = userRegistries.Count;
+                Random r = new Random(length);
+
+            
                 foreach (int i in Enumerable.Range(0, length).OrderBy(x => r.Next()))
                 {
                     PythonCodeObj nextTask;
